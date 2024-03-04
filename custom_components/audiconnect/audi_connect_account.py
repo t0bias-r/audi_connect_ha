@@ -740,7 +740,7 @@ class AudiConnectVehicle:
     def service_inspection_time(self):
         """Return time left for service inspection"""
         if self.service_inspection_time_supported:
-            return -int(
+            return int(
                 self._vehicle.fields.get("MAINTENANCE_INTERVAL_TIME_TO_INSPECTION")
             )
 
@@ -754,7 +754,7 @@ class AudiConnectVehicle:
     def service_inspection_distance(self):
         """Return distance left for service inspection"""
         if self.service_inspection_distance_supported:
-            return -int(
+            return int(
                 self._vehicle.fields.get("MAINTENANCE_INTERVAL_DISTANCE_TO_INSPECTION")
             )
 
@@ -765,10 +765,24 @@ class AudiConnectVehicle:
             return True
 
     @property
+    def service_adblue_distance(self):
+        """Return distance left for service inspection"""
+        if self.service_adblue_distance_supported:
+            return int(
+                self._vehicle.fields.get("ADBLUE_RANGE")
+            )
+
+    @property
+    def service_adblue_distance_supported(self):
+        check = self._vehicle.fields.get("ADBLUE_RANGE")
+        if check and parse_int(check):
+            return True
+
+    @property
     def oil_change_time(self):
         """Return time left for oil change"""
         if self.oil_change_time_supported:
-            return -int(
+            return int(
                 self._vehicle.fields.get("MAINTENANCE_INTERVAL_TIME_TO_OIL_CHANGE")
             )
 
@@ -782,7 +796,7 @@ class AudiConnectVehicle:
     def oil_change_distance(self):
         """Return distance left for oil change"""
         if self.oil_change_distance_supported:
-            return -int(
+            return int(
                 self._vehicle.fields.get("MAINTENANCE_INTERVAL_DISTANCE_TO_OIL_CHANGE")
             )
 
@@ -796,12 +810,19 @@ class AudiConnectVehicle:
     def oil_level(self):
         """Return oil level percentage"""
         if self.oil_level_supported:
-            return float(self._vehicle.fields.get("OIL_LEVEL_DIPSTICKS_PERCENTAGE"))
+            val = self._vehicle.fields.get("OIL_LEVEL_DIPSTICKS_PERCENTAGE")
+            if type(val) is bool:
+                if val:
+                    return 100
+                else:
+                  return 1
+            if parse_float(val):
+                return True
 
     @property
     def oil_level_supported(self):
         check = self._vehicle.fields.get("OIL_LEVEL_DIPSTICKS_PERCENTAGE")
-        if check and parse_float(check):
+        if check is not None:
             return True
 
     @property
@@ -850,8 +871,11 @@ class AudiConnectVehicle:
     def parking_light(self):
         """Return true if parking light is on"""
         if self.parking_light_supported:
-            check = self._vehicle.fields.get("LIGHT_STATUS")
-            return check != "2"
+            try:
+                check = self._vehicle.fields.get("LIGHT_STATUS")
+                return check[0]["status"] != "off" or check[1]["status"] != "off"
+            except:
+                return False
 
     @property
     def parking_light_supported(self):
@@ -1249,6 +1273,18 @@ class AudiConnectVehicle:
             return True
 
     @property
+    def primary_engine_range_percent(self):
+        """Return primary engine range"""
+        if self.primary_engine_range_percent_supported:
+            return self._vehicle.state.get("primaryEngineRangePercent")
+
+    @property
+    def primary_engine_range_percent_supported(self):
+        check = self._vehicle.state.get("primaryEngineRangePercent")
+        if check and check != "unsupported":
+            return True
+
+    @property
     def secondary_engine_range(self):
         """Return secondary engine range"""
         if self.secondary_engine_range_supported:
@@ -1259,6 +1295,32 @@ class AudiConnectVehicle:
         check = self._vehicle.state.get("secondaryEngineRange")
         if check and check != "unsupported":
             return True
+
+    @property
+    def car_type(self):
+        """Return secondary engine range"""
+        if self.car_type_supported:
+            return self._vehicle.state.get("carType")
+
+    @property
+    def car_type_supported(self):
+        check = self._vehicle.state.get("carType")
+        if check and check != "unsupported":
+            return True            
+
+    @property
+    def secondary_engine_range_percent(self):
+        """Return secondary engine range"""
+        if self.secondary_engine_range_percent_supported:
+            return self._vehicle.state.get("secondaryEngineRangePercent")
+
+    @property
+    def secondary_engine_range_percent_supported(self):
+        check = self._vehicle.state.get("secondaryEngineRangePercent")
+        if check and check != "unsupported":
+            return True
+
+
 
     @property
     def hybrid_range(self):
