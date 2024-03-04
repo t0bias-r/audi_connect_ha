@@ -190,7 +190,7 @@ class AudiService:
             "lvBattery",
             "measurements",
             "oilLevel",
-            "readiness"
+            "readiness",
             #"userCapabilities",
             "vehicleHealthInspection",
             "vehicleHealthWarnings",
@@ -203,6 +203,7 @@ class AudiService:
                 jobs=",".join(JOBS2QUERY)
             )
         )
+        # _LOGGER.warning("DATA From your AUDI: " + str(data))	    
         return VehicleDataResponse(data)
 
     async def get_charger(self, vin: str):
