@@ -78,7 +78,8 @@ class VehicleDataResponse:
         self._tryAppendStateWithTs(data, "chargingState",               -1, ["charging",     "chargingStatus", "value",  "chargingState"])
         self._tryAppendStateWithTs(data, "plugState",                   -1, ["charging",     "plugStatus",     "value",  "plugConnectionState"])
         self._tryAppendStateWithTs(data, "remainingChargingTime",       -1, ["charging",     "plugStatus",     "value",  "remainingChargingTimeToComplete_min"])
-        
+        self._tryAppendStateWithTs(data, "climatisationState",          -1, ["climatisation",  "auxiliaryHeatingStatus",    "value", "climatisationState"])
+        self._tryAppendStateWithTs(data, "last_update_time",            -1, ["measurements",   "odometerStatus",    "value",  "carCapturedTimestamp"])
 
     def _tryAppendStateWithTs(self, json, name, tsoff, loc):
         ts = None
